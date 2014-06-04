@@ -1,0 +1,126 @@
+Week of May 09, 2014
+-----------------------------
+o initial training
+o some more online training
+o setup badge + pin and TESA pin
+o setup AD and PAC passwords
+o applied for remote computer accounts
+o project overview with Eric Brugger
+o started learning about EAVL
+o attended technical seminar: Peter Lindstrom about massive data management
+  -> reordering, streaming/in-place processing, compression
+o compiled EAVL, working through tutorials
+o TODO: prepare Uintah PIDX plan to present in two weeks
+o guest wireless acct: guest-13030, EGy6u2A6
+o finished online training
+o meeting with Ryan 
+  
+o data converstion with Amey
+o Submitted LDAV abstract
+
+
+Week of May 16, 2014
+-----------------------------
+o productive meeting with Ryan Bleile, Cyrus Harrison, and Eric Brugger.
+  o hacked out almost-working resample filter that resamples an unstructured mesh onto a structured mesh
+  o requires a map from the destination nodes to the source cells in which they live
+o received OTP token and CRYPTOCard
+  o tested access to ...
+o requested access to DAG mailing list from Peter Lindstrom
+o joined student bulletin board mailing list
+o attended NEO II session on Wednesday
+o compiled VisIt on aztec in /usr/nfs
+o submitted travel expenses
+o signed up for NIF tour
+o compiled VisIt, eavl, and visus on aztec and rzmerl
+o struggled compiling on osx (!)
+o talked plan for simple implementation with Eric
+o (didn't do much on that plan)
+
+o sketched LDAV paper
+o enabled replace mod_visus on atlantis
+
+
+Week of May 23, 2014
+-----------------------------
+o VisIt dev meeting on Monday
+o Intel training on Tuesday
+o NIF tour on Wednesday
+
+o It is Thursday, ugh. Monday and Wednesday I mostly focused on my dad's situation and a little on LDAV. Tuesday I was at that training. Meh.
+
+Week of May 30, 2014
+-----------------------------
+o Monday was a holiday, Friday is my first "980" day off. 
+o Wednesday evening: finally got an EAVL filter working!
+
+Week of June 6, 2014
+-----------------------------
+o Got multi-value isosurface working
+  - but it uses memory inefficiently
+o Got edge working with eavl and cuda
+  - still not detecting vtk on cuda compile
+o Got build working on local Mac
+
+
+TODO
+-----------------------------
+o make student web page
+o sign up for tours
+o extend dates
+  X get formal approval
+  o change airline ticket
+  X talk to Teri
+o visit Dublin Hills Regional Park (magnificient view of both the bay and the tri-canyon area)
+
+
+
+-------------------------------------------------------------------------------
+Building EAVL on OSX 10.9
+
+1. Download and install HPC gcc 4.whatever is newer than osx version, and install CUDA
+2. ./configure CC=/path/to/your/gcc (probably /usr/local/bin/gcc) CXX=/path/to/g++
+3. make -j
+4. export DYLD_LIBRARY_PATH=/Developer/NVIDIA/CUDA-6.0/lib
+5. make check -j (be sure to disable dynamic switching and force discrete mode if using gfxcardstatus app)
+
+-------------------------------------------------------------------------------
+Building VisIt on OSX 10.9
+
+Qt and VTK will fail to build.
+o Download latest 4.8.6 Qt source and build using VisIt configure line (look at 4.8.3 log to find it). make install to 4.8.6 dir
+o Modify VTK CMakeList to remove APPLE-specific gc (-useobjc_gc or something like that), delete VTK build dir and rebuild using cmake from visit. make install
+o  ./build_visit --console --makeflags -j16 --no-visit --required --optional --parallel --all-io --no-mesa --eavl --alt-qt-dir /Users/christensen41/code/visit/build/prereqs/visit/qt/4.8.6/i386-apple-darwin13_gcc --no-adios --no-ccmio --no-cgns --alt-eavl-dir /Users/cam/code/EAVL --no-manta --no-mpich --no-netcdf --no-pyside --no-uintah 
+o make -j12 and you’re good to go
+
+-------------------------------------------------------------------------------
+Compiling VisIt with my own build of EAVL
+
+./build_visit --console --makeflags -j16 --no-visit --required --optional --parallel --all-io --no-mesa --eavl --system-qt --no-adios --no-ccmio --no-cgns --alt-eavl-dir /Users/cam/code/EAVL --no-manta --no-mpich --no-netcdf --no-pyside --no-uintah
+
+ccmake -DVISIT_CONFIG_SITE=/Users/cam/code/visit/visit-git/prereqs/2.7/mercury.local/cmake ../../src
+
+
+-------------------------------------------------------------------------------
+
+Wednesday, May 28, 2014
+
+SIMODataTreeIterators that need to have ExecuteDataTree upgraded to avtDataRepresentation version:
+
+/Users/cam/code/visit/visit-git/src/avt/Filters/avtContourFilter.h:97:class AVTFILTERS_API avtContourFilter : public avtSIMODataTreeIterator
+/Users/cam/code/visit/visit-git/src/avt/Filters/avtFacelistFilter.h:128:class AVTFILTERS_API avtFacelistFilter : public avtSIMODataTreeIterator
+/Users/cam/code/visit/visit-git/src/avt/Pipeline/AbstractFilters/avtDataTreeIterator.h:95:class PIPELINE_API avtDataTreeIterator : virtual public avtSIMODataTreeIterator
+/Users/cam/code/visit/visit-git/src/avt/Pipeline/AbstractFilters/avtPluginSIMODataTreeIterator.h:58:    public virtual avtSIMODataTreeIterator, 
+/Users/cam/code/visit/visit-git/src/avt/Pipeline/AbstractFilters/avtStructuredChunkDataTreeIterator.h:67:class PIPELINE_API avtStructuredChunkDataTreeIterator : public avtSIMODataTreeIterator
+/Users/cam/code/visit/visit-git/src/operators/AMRStitchCell/avtAMRStitchCellFilter.h:69:class avtAMRStitchCellFilter :  public virtual avtSIMODataTreeIterator,
+/Users/cam/code/visit/visit-git/src/operators/Clip/avtClipFilter.h:105:class avtClipFilter : public avtSIMODataTreeIterator,
+/Users/cam/code/visit/visit-git/src/operators/Reflect/avtReflectFilter.h:73:class avtReflectFilter : public virtual avtSIMODataTreeIterator,
+/Users/cam/code/visit/visit-git/src/operators/Replicate/avtReplicateFilter.h:84:class avtReplicateFilter : public virtual avtSIMODataTreeIterator,
+/Users/cam/code/visit/visit-git/src/plots/Boundary/avtBoundaryFilter.h:68:class avtBoundaryFilter : public avtSIMODataTreeIterator
+/Users/cam/code/visit/visit-git/src/plots/FilledBoundary/avtFilledBoundaryFilter.h:67:class avtFilledBoundaryFilter : public avtSIMODataTreeIterator
+/Users/cam/code/visit/visit-git/src/plots/Label/avtLabelSubsetsFilter.h:65:class avtLabelSubsetsFilter : public avtSIMODataTreeIterator
+/Users/cam/code/visit/visit-git/src/plots/Mesh/avtMeshFilter.h:86:class avtMeshFilter : public avtSIMODataTreeIterator
+/Users/cam/code/visit/visit-git/src/plots/ParallelCoordinates/avtParallelCoordinatesFilter.h:100:class avtParallelCoordinatesFilter : public avtSIMODataTreeIterator
+/Users/cam/code/visit/visit-git/src/plots/Subset/avtSubsetFilter.h:75:class avtSubsetFilter : public avtSIMODataTreeIterator
+/Users/cam/code/visit/visit-git/src/plots/Topology/avtTopologyFilter.h:65:class avtTopologyFilter : public avtSIMODataTreeIterator
+/Users/cam/code/visit/visit-git/src/plots/WellBore/avtWellBoreFilter.h:74:class avtWellBoreFilter : public avtSIMODataTreeIterator
